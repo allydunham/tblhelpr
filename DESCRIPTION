@@ -1,0 +1,13 @@
+Package: tblhelpr
+Type: Package
+Title: Common Opperations for Tibbles
+Version: 0.1.0
+Authors@R: person("Alistair", "Dunham", email = "ally@ebi.ac.uk", role = c("aut", "cre"))
+Description: Functions for common opperations on tidyverse tibbles, for example
+    allowing conversion to matrices, calculation of PCA or tSNE and adding 
+    hclust ordering to factor columns.
+License: LGPL-3
+Encoding: UTF-8
+LazyData: true
+Imports:
+    dplyr
