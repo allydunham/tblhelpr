@@ -14,20 +14,15 @@
 tibble_to_matrix <- function(tbl, ..., row_names=NULL){
   cols <- rlang::enquos(...)
 
-  if (!is.null(row_names)){
-    if (length(row_names) == 1 & is.character(row_names)){
-      row_names <- tbl[[row_names]]
-    }
-  }
-
   mat <- as.matrix(dplyr::select(tbl, !!! cols))
 
   if (!is.null(row_names)){
-    if (length(row_names) == 1 & row_names %in% colnames(tbl)){
-      row_names <- tbl[row_names]
+    if (length(row_names) == 1 & row_names[1] %in% colnames(tbl)){
+      row_names <- tbl[[row_names]]
     }
     rownames(mat) <- row_names
   }
+
   return(mat)
 }
 
@@ -50,6 +45,6 @@ transpose_tibble <- function(tbl, col_names, id_col = "columns"){
   tibble_to_matrix(tbl, -!!col_names,
                    row_names = dplyr::pull(tbl, !!col_names)) %>%
     t() %>%
-    dplyr::as_tibble(rownames = name_col) %>%
+    dplyr::as_tibble(rownames = id_col) %>%
     return()
 }
