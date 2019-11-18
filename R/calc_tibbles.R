@@ -58,25 +58,34 @@ tibble_tsne <- function(tbl, ..., tsne_kwargs=list()){
 #' with order based upon \code{hclust}
 #'
 #' @param tbl A tibble.
-#' @param ... Tidy selection of columns to correlate
-#' @param filter_diag Whether to
+#' @param x Tidy selection of variables for x
+#' @param y Optional tidy selection of variables for y. If given correlations
+#'     between x and y are calculated, otherwise all correlations between x are
+#'     calculated.
+#' @param filter_diag Whether to filter diagonal entries
+#' @param ... Other arguments to pass to \code{cor}
 #'
 #' @importFrom dplyr "%>%"
 #' @export
-tibble_correlation <- function(tbl, ..., filter_diag=FALSE){
-  prof_cols <- rlang::enquos(...)
+tibble_correlation <- function(tbl, x, y = NULL, filter_diag=FALSE, ...){
+  x <- rlang::enquo(x)
+  y <- rlang::enquo(y)
 
-  cor_mat <- tibble_to_matrix(tbl, !!! prof_cols) %>%
-    cor()
+  x_mat <- tibble_to_matrix(tbl, !!x)
 
-  group_order <- rownames(cor_mat)[hclust(dist(cor_mat))$order]
+  if (!rlang::quo_is_null(y)){
+    y_mat <- tibble_to_matrix(tbl, !!y)
+  } else {
+    y_mat <- NULL
+  }
+
+  cor_mat <- cor(x = x_mat, y = y_mat, ...)
 
   cors <- dplyr::as_tibble(cor_mat, rownames = "cat1") %>%
     tidyr::pivot_longer(-cat1, names_to = "cat2", values_to = "cor") %>%
-    dplyr::mutate(cat1 = factor(cat1, levels = group_order),
-                  cat2 = factor(cat2, levels = group_order))
+    add_factor_order(cat1, cat2, cor, sym = rlang::quo_is_null(y))
 
-  if (filter_diag){
+  if (filter_diag & rlang::quo_is_null(y)){
     cors <- dplyr::filter(cors, !cat1 == cat2)
   }
 

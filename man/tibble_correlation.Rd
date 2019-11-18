@@ -4,14 +4,20 @@
 \alias{tibble_correlation}
 \title{Calculate correlations between tibble columns}
 \usage{
-tibble_correlation(tbl, ..., filter_diag = FALSE)
+tibble_correlation(tbl, x, y = NULL, filter_diag = FALSE, ...)
 }
 \arguments{
 \item{tbl}{A tibble.}
 
-\item{...}{Tidy selection of columns to correlate}
+\item{x}{Tidy selection of variables for x}
 
-\item{filter_diag}{Whether to}
+\item{y}{Optional tidy selection of variables for y. If given correlations
+between x and y are calculated, otherwise all correlations between x are
+calculated.}
+
+\item{filter_diag}{Whether to filter diagonal entries}
+
+\item{...}{Other arguments to pass to \code{cor}}
 }
 \description{
 Calculate the correlation between all pairs from a selection of columns.
